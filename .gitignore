@@ -1,2 +1,9 @@
 gns3-project
+__pycache__
+dist
+*.egg-info
 .venv
+Images
+*.log
+*.glade~
+gns3-project
