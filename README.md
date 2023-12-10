@@ -1,5 +1,8 @@
 # AutoNation
 
+AutoNation is an application for network tasks automation. The application has
+GUI and can run multiple commands into multiple routers from a json file.
+
 # Router Setup
 
 To be able to use the AutoNation application the router need to be setuped to accept
