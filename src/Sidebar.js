@@ -21,7 +21,7 @@ export default function Sidebar({ routes, state, toggleSidebar }) {
         <List>
           {routes.map((item, index) => (
             <ListItem key={item.NAME}>
-              <ListItemButton component={Link} to={item.NAME}>
+              <ListItemButton component={Link} to={item.PATH}>
                 <ListItemIcon>{item.ICON}</ListItemIcon>
                 <ListItemText primary={item.NAME} />
               </ListItemButton>
