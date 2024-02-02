@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Routes, Route, useLocation } from "react-router-dom";
+import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import RouterIcon from "@mui/icons-material/Router";
 import TaskIcon from "@mui/icons-material/Task";
@@ -16,6 +17,7 @@ import BackupIcon from "@mui/icons-material/Backup";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 import Sidebar from "./Sidebar";
+import HomePage from "./HomePage";
 import RoutersPage from "./RoutersPage/RoutersPage";
 import TasksPage from "./TasksPage/TasksPage";
 import TopologyPage from "./TopologyPage/TopologyPage";
@@ -23,6 +25,7 @@ import BackupPage from "./BackupPage/BackupPage";
 import AddNewTaskModal from "./TasksPage/AddNewTaskModal";
 import "./App.css";
 
+const HOME = "Home";
 const ROUTERS = "Routers";
 const TASKS = "Tasks";
 const TOPOLOGY = "TOPOLOGY";
@@ -30,29 +33,39 @@ const BACKUP = "Backup";
 
 const ROUTES = [
   {
+    NAME: HOME,
+    PATH: "/",
+    ICON: <HomeIcon />,
+    ELEMENT: <HomePage />,
+  },
+  {
     NAME: ROUTERS,
+    PATH: ROUTERS,
     ICON: <RouterIcon />,
     ELEMENT: <RoutersPage />,
   },
   {
     NAME: TASKS,
+    PATH: TASKS,
     ICON: <TaskIcon />,
     ELEMENT: <TasksPage />,
   },
   {
     NAME: TOPOLOGY,
+    PATH: TOPOLOGY,
     ICON: <HubIcon />,
     ELEMENT: <TopologyPage />,
   },
   {
     NAME: BACKUP,
+    PATH: BACKUP,
     ICON: <BackupIcon />,
     ELEMENT: <BackupPage />,
   },
 ];
 
 function App() {
-  const location = useLocation();
+  const location = useLocation(ROUTERS);
   const [sideBarState, setSideBarState] = React.useState(false);
 
   const [openModal, setOpenModal] = React.useState(false);
@@ -75,13 +88,25 @@ function App() {
     if (current_path === TASKS) {
       return (
         <div>
-          <Button variant="contained" color="primary" onClick={handleOpenModal}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenModal}
+            sx={{
+              borderRadius: 5, // Rounded corners
+              padding: "6px 16px", // Adjust padding as needed
+              textTransform: "uppercase", // Uppercase button text
+              boxShadow: "none", // Remove box shadow
+            }}
+          >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <AddCircleOutlineIcon />
-              <Typography>New Task</Typography>
+              <AddCircleOutlineIcon sx={{ fontSize: "1rem" }} />{" "}
+              <Typography variant="button" component="span">
+                New Task
+              </Typography>
             </Box>
           </Button>
-          <AddNewTaskModal state={openModal} setState={handleCloseModal} />
+          <AddNewTaskModal open={openModal} onClose={handleCloseModal} />
         </div>
       );
     }
@@ -113,7 +138,7 @@ function App() {
       />
       <Routes>
         {ROUTES.map((item, index) => (
-          <Route key={item.NAME} path={item.NAME} element={item.ELEMENT} />
+          <Route key={item.NAME} path={item.PATH} element={item.ELEMENT} />
         ))}
       </Routes>
     </Box>

@@ -8,30 +8,35 @@ import {
   Box,
   Typography,
   IconButton,
+  Divider,
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function AddNewTaskModal({ state, setState }) {
+export default function AddNewTaskModal({ open, onClose }) {
   const [taskName, setTaskName] = React.useState("");
-  const [steps, setSteps] = React.useState([{ id: Date.now(), name: "" }]);
+  const [steps, setSteps] = React.useState([
+    { id: Date.now(), name: "", command: "" },
+  ]);
 
   const handleTaskNameChange = (event) => {
     setTaskName(event.target.value);
   };
 
-  const handleStepNameChange = (id, event) => {
-    const newSteps = steps.map((step) => {
-      if (step.id === id) {
-        return { ...step, name: event.target.value };
-      }
-      return step;
-    });
-    setSteps(newSteps);
+  const handleStepChange = (id, event) => {
+    const { name, value } = event.target;
+    setSteps(
+      steps.map((step) => {
+        if (step.id === id) {
+          return { ...step, [name]: value };
+        }
+        return step;
+      })
+    );
   };
 
   const handleAddStep = () => {
-    setSteps([...steps, { id: Date.now(), name: "" }]);
+    setSteps([...steps, { id: Date.now(), name: "", command: "" }]);
   };
 
   const handleRemoveStep = (id) => {
@@ -40,55 +45,86 @@ export default function AddNewTaskModal({ state, setState }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Here you would handle the form submission,
-    // typically sending the data to a server or state management store
     console.log({ taskName, steps });
+    // Send the data to a server or state management store
   };
+
+  const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "80%",
+    maxHeight: "80vh",
+    overflowY: "auto",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    p: 4,
+  };
+
   return (
     <Modal
-      open={state}
-      onClose={setState}
+      open={open}
+      onClose={onClose}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Container component="main" maxWidth="sm">
-        <Paper style={{ padding: "16px", marginTop: "16px" }}>
-          <Typography variant="h6">Create a New Task</Typography>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Task Name"
-              value={taskName}
-              onChange={handleTaskNameChange}
-              margin="normal"
-            />
-            {steps.map((step, index) => (
-              <Box key={step.id} display="flex" alignItems="center" marginY={2}>
-                <TextField
-                  fullWidth
-                  label={`Step ${index + 1}`}
-                  value={step.name}
-                  onChange={(event) => handleStepNameChange(step.id, event)}
-                  margin="normal"
-                />
+      <Container component={Paper} sx={modalStyle}>
+        <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+          Create a New Task
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="Task Name"
+            value={taskName}
+            onChange={handleTaskNameChange}
+            margin="normal"
+          />
+          {steps.map((step, index) => (
+            <Box key={step.id} sx={{ my: 2 }}>
+              <TextField
+                fullWidth
+                label={`Step ${index + 1} Name`}
+                name="name"
+                value={step.name}
+                onChange={(event) => handleStepChange(step.id, event)}
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label={`Step ${index + 1} Command`}
+                name="command"
+                value={step.command}
+                onChange={(event) => handleStepChange(step.id, event)}
+                margin="normal"
+              />
+              <Box display="flex" justifyContent="flex-end">
                 <IconButton onClick={() => handleRemoveStep(step.id)}>
                   <DeleteIcon />
                 </IconButton>
               </Box>
-            ))}
+              {index < steps.length - 1 && <Divider />}
+            </Box>
+          ))}
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            my={2}
+          >
             <Button
               type="button"
               startIcon={<AddCircleOutlineIcon />}
               onClick={handleAddStep}
-              sx={{ my: 2 }}
             >
               Add Step
             </Button>
             <Button type="submit" variant="contained" color="primary">
               Save Task
             </Button>
-          </form>
-        </Paper>
+          </Box>
+        </form>
       </Container>
     </Modal>
   );
