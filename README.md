@@ -1,7 +1,6 @@
 # AutoNation
 
-AutoNation is an application for network tasks automation. The application has
-GUI and can run multiple commands into multiple routers from a json file.
+AutoNation is an application for network tasks automation.
 
 # Router Setup
 
@@ -65,52 +64,4 @@ the necessary values.
 
    ```
    ssh -o Ciphers=aes256-cbc -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedAlgorithms=+ssh-rsa -oKexAlgorithms=+diffie-hellman-group1-sha1 <USERNAME>@<ROUTER_IP>
-   ```
-
-# Application Build Steps
-
-**_Note: the application was developed using linux operating system_**
-
-To build the application and install into your system follow the steps:
-
-1. Open a terminal and then go to the project folder
-
-2. Build the python package.
-   ```
-   ~$ python -m build
-   ```
-
-# Application Development Steps
-
-**_Note: the application was developed using linux operating system_**
-
-To start developing and testing the application follow the steps:
-
-1. Create a python virtual enviroment
-
-   ```
-   ~$ python -m venv .venv
-   ```
-
-2. Activate the virtual enviroment
-
-   ```
-   ~$ source .venv/bin/activate
-   ```
-
-3. Install the package into the virtual enviroment
-
-   ```
-   ~$ pip install --editable .
-   ```
-
-4. Install requried packages
-
-   ```
-   ~$ pip install -r requirements.txt
-   ```
-
-5. Run the AutoNation application and start the development
-   ```
-   ~$ AutoNationGUI
    ```
