@@ -16,7 +16,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 export default function AddNewTaskModal({ open, onClose }) {
   const [taskName, setTaskName] = React.useState("");
   const [steps, setSteps] = React.useState([
-    { id: Date.now(), name: "", command: "" },
+    { id: Date.now(), name: "", commands: [""] },
   ]);
 
   const handleTaskNameChange = (event) => {
@@ -36,11 +36,49 @@ export default function AddNewTaskModal({ open, onClose }) {
   };
 
   const handleAddStep = () => {
-    setSteps([...steps, { id: Date.now(), name: "", command: "" }]);
+    setSteps([...steps, { id: Date.now(), name: "", commands: [""] }]);
   };
 
   const handleRemoveStep = (id) => {
     setSteps(steps.filter((step) => step.id !== id));
+  };
+
+  const handleCommandChange = (stepId, commandIndex, event) => {
+    setSteps(
+      steps.map((step) => {
+        if (step.id === stepId) {
+          const newCommands = [...step.commands];
+          newCommands[commandIndex] = event.target.value;
+          return { ...step, commands: newCommands };
+        }
+        return step;
+      })
+    );
+  };
+
+  const handleAddCommand = (stepId) => {
+    setSteps(
+      steps.map((step) => {
+        if (step.id === stepId) {
+          return { ...step, commands: [...step.commands, ""] };
+        }
+        return step;
+      })
+    );
+  };
+
+  const handleRemoveCommand = (stepId, commandIndex) => {
+    setSteps(
+      steps.map((step) => {
+        if (step.id === stepId) {
+          const newCommands = step.commands.filter(
+            (_, index) => index !== commandIndex
+          );
+          return { ...step, commands: newCommands };
+        }
+        return step;
+      })
+    );
   };
 
   const handleSubmit = (event) => {
@@ -91,20 +129,39 @@ export default function AddNewTaskModal({ open, onClose }) {
                 onChange={(event) => handleStepChange(step.id, event)}
                 margin="normal"
               />
-              <TextField
-                fullWidth
-                label={`Step ${index + 1} Command`}
-                name="command"
-                value={step.command}
-                onChange={(event) => handleStepChange(step.id, event)}
-                margin="normal"
-              />
-              <Box display="flex" justifyContent="flex-end">
-                <IconButton onClick={() => handleRemoveStep(step.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-              {index < steps.length - 1 && <Divider />}
+              {step.commands.map((command, cmdIndex) => (
+                <Box key={cmdIndex} display="flex" alignItems="center" mt={2}>
+                  <TextField
+                    fullWidth
+                    label={`Step ${index + 1} Command ${cmdIndex + 1}`}
+                    value={command}
+                    onChange={(event) =>
+                      handleCommandChange(step.id, cmdIndex, event)
+                    }
+                    margin="normal"
+                  />
+                  <IconButton
+                    onClick={() => handleRemoveCommand(step.id, cmdIndex)}
+                    sx={{ ml: 1 }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              ))}
+              <Button
+                startIcon={<AddCircleOutlineIcon />}
+                onClick={() => handleAddCommand(step.id)}
+                sx={{ my: 1 }}
+              >
+                Add Command
+              </Button>
+              <Divider sx={{ my: 1 }} />
+              <IconButton
+                onClick={() => handleRemoveStep(step.id)}
+                sx={{ my: 1 }}
+              >
+                <DeleteIcon />
+              </IconButton>
             </Box>
           ))}
           <Box
