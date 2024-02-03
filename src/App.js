@@ -22,7 +22,8 @@ import RoutersPage from "./RoutersPage/RoutersPage";
 import TasksPage from "./TasksPage/TasksPage";
 import TopologyPage from "./TopologyPage/TopologyPage";
 import BackupPage from "./BackupPage/BackupPage";
-import AddNewTaskModal from "./TasksPage/AddNewTaskModal";
+import AddNewTaskModal from "./TasksPage/TaskModal";
+import NotFoundPage from "./RoutingPages.js/NotFoundPage";
 import "./App.css";
 
 const HOME = "Home";
@@ -140,6 +141,7 @@ function App() {
         {ROUTES.map((item, index) => (
           <Route key={item.NAME} path={item.PATH} element={item.ELEMENT} />
         ))}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Box>
   );

@@ -1,7 +1,6 @@
 import React from "react";
 
 import {
-  Container,
   Accordion,
   AccordionSummary,
   Typography,
@@ -9,8 +8,9 @@ import {
 } from "@mui/material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Command from "./Command";
 
-export default function Step({ stepTitle }) {
+export default function Step({ step }) {
   return (
     <Accordion
       sx={{
@@ -31,13 +31,17 @@ export default function Step({ stepTitle }) {
           variant="h6"
           sx={{ width: "100%", flexShrink: 0, flexGrow: 1 }}
         >
-          {stepTitle}
+          {step.name}
         </Typography>
       </AccordionSummary>
       <AccordionDetails sx={{ p: 0 }}>
-        <Container>
-          <Typography sx={{ my: 2 }}>Hello this is testing</Typography>
-        </Container>
+        {step.commands.map((command, cmdIndex) => (
+          <Command
+            command={command}
+            commandNumber={cmdIndex + 1}
+            key={cmdIndex}
+          />
+        ))}
       </AccordionDetails>
     </Accordion>
   );

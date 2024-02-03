@@ -13,11 +13,11 @@ import {
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function AddNewTaskModal({ open, onClose }) {
-  const [taskName, setTaskName] = React.useState("");
-  const [steps, setSteps] = React.useState([
-    { id: Date.now(), name: "", commands: [""] },
-  ]);
+export default function AddNewTaskModal({ open, onClose, task }) {
+  const [taskName, setTaskName] = React.useState(task ? task.taskName : "");
+  const [steps, setSteps] = React.useState(
+    task ? task.steps : [{ id: Date.now(), name: "", commands: [""] }]
+  );
 
   const handleTaskNameChange = (event) => {
     setTaskName(event.target.value);
@@ -83,7 +83,7 @@ export default function AddNewTaskModal({ open, onClose }) {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log({ taskName, steps });
+    console.log({ id: Date.now(), taskName, steps });
     // Send the data to a server or state management store
   };
 
@@ -109,7 +109,7 @@ export default function AddNewTaskModal({ open, onClose }) {
     >
       <Container component={Paper} sx={modalStyle}>
         <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
-          Create a New Task
+          {task ? "Edit Task" : "Create a New Task"}
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
