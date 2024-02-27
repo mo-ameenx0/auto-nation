@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
+import endpoints from "../endpoints";
 
 export default function AddNewTaskModal({ open, onClose, task }) {
   const [taskName, setTaskName] = React.useState(task ? task.taskName : "");
@@ -81,10 +82,37 @@ export default function AddNewTaskModal({ open, onClose, task }) {
     );
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ id: Date.now(), taskName, steps });
-    // Send the data to a server or state management store
+    try {
+      // update task base on id
+      var response = null;
+      if (task) {
+        const _id = task._id;
+        response = await fetch(endpoints.updateTask + `/${_id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ taskName, steps }),
+        });
+      }
+      // insert new task
+      else {
+        response = await fetch(endpoints.inserTasks, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ taskName, steps }),
+        });
+      }
+
+      const result = await response.json();
+      console.log("Success:", result);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const modalStyle = {
