@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use(require("./endpoints"));
 
-const dbo = require("./db/conn");
+const dbo = require("./db");
 
 app.listen(port, async () => {
   // perform a database connection when server starts
