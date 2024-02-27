@@ -99,7 +99,7 @@ export default function AddNewTaskModal({ open, onClose, task }) {
       }
       // insert new task
       else {
-        response = await fetch(endpoints.inserTasks, {
+        response = await fetch(endpoints.insertTasks, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
