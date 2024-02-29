@@ -77,9 +77,16 @@ export default function RoutersPage() {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Add Device
-      </Button>
+      <Grid
+        item
+        xs={12}
+        sx={{ margin: 2 }}
+        style={{ display: "flex", justifyContent: "flex-start" }}
+      >
+        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+          Add Device
+        </Button>
+      </Grid>
       <Grid container spacing={3}>
         {routers.map((router) => (
           <RouterRow
