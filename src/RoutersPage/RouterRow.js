@@ -6,24 +6,19 @@ import {
   Tooltip,
   IconButton,
   Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+
+import ConfirmationDialog from "../Dialogs/ConfirmationDialog";
+
 import endpoints from "../endpoints";
 
 export default function RouterRow({ router, onRemove }) {
-  const [openConfirm, setOpenConfirm] = React.useState(false);
+  const [dialogState, setDialogState] = React.useState(false);
+  const openDialog = () => setDialogState(true);
+  const closeDialog = () => setDialogState(false);
 
-  const handleOpenConfirm = () => {
-    setOpenConfirm(true);
-  };
-
-  const handleConfirmRemove = async () => {
+  const handleDialogConfirm = async () => {
     const response = await fetch(endpoints.deleteRouter + `/${router._id}`, {
       method: "DELETE",
       headers: {
@@ -33,7 +28,7 @@ export default function RouterRow({ router, onRemove }) {
     const result = await response.json();
     console.log("Success:", result);
     onRemove(router._id);
-    setOpenConfirm(false);
+    closeDialog();
   };
   return (
     <Grid item xs={12} sm={6} md={3}>
@@ -71,11 +66,10 @@ export default function RouterRow({ router, onRemove }) {
           >
             <strong>Username:</strong> {router.username}
           </Typography>
-          {/* Other router details */}
           <Tooltip title="Remove router">
             <IconButton
               aria-label={`Remove ${router.name}`}
-              onClick={handleOpenConfirm}
+              onClick={openDialog}
               sx={{ marginTop: 1 }}
             >
               <DeleteIcon />
@@ -83,26 +77,12 @@ export default function RouterRow({ router, onRemove }) {
           </Tooltip>
         </CardContent>
       </Card>
-
-      <Dialog
-        open={openConfirm}
-        onClose={() => setOpenConfirm(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{"Confirm Removal"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Are you sure you want to remove this router?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenConfirm(false)}>Cancel</Button>
-          <Button onClick={handleConfirmRemove} autoFocus>
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmationDialog
+        message={"Are you sure you want to remove this router?"}
+        dialogState={dialogState}
+        closeDialog={closeDialog}
+        handleConfirm={handleDialogConfirm}
+      />
     </Grid>
   );
 }

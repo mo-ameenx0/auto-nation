@@ -1,20 +1,12 @@
 import * as React from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  IconButton,
-  Button,
-  Typography,
-} from "@mui/material";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { AppBar, Box, Toolbar, IconButton } from "@mui/material";
+import { Routes, Route } from "react-router-dom";
 import HomeIcon from "@mui/icons-material/Home";
 import MenuIcon from "@mui/icons-material/Menu";
 import RouterIcon from "@mui/icons-material/Router";
 import TaskIcon from "@mui/icons-material/Task";
 import HubIcon from "@mui/icons-material/Hub";
 import BackupIcon from "@mui/icons-material/Backup";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 import Sidebar from "./Sidebar";
 import HomePage from "./HomePage";
@@ -22,7 +14,6 @@ import RoutersPage from "./RoutersPage/RoutersPage";
 import TasksPage from "./TasksPage/TasksPage";
 import TopologyPage from "./TopologyPage/TopologyPage";
 import BackupPage from "./BackupPage/BackupPage";
-import AddNewTaskModal from "./TasksPage/TaskModal";
 import NotFoundPage from "./RoutingPages.js/NotFoundPage";
 import "./App.css";
 
@@ -66,12 +57,7 @@ const ROUTES = [
 ];
 
 function App() {
-  const location = useLocation(ROUTERS);
   const [sideBarState, setSideBarState] = React.useState(false);
-
-  const [openModal, setOpenModal] = React.useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
 
   const toggleSidebar = (open) => (event) => {
     if (
@@ -82,35 +68,6 @@ function App() {
     }
 
     setSideBarState(open);
-  };
-
-  const appBarContent = () => {
-    var current_path = location.pathname.substring(1);
-    if (current_path === TASKS) {
-      return (
-        <div>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpenModal}
-            sx={{
-              borderRadius: 5, // Rounded corners
-              padding: "6px 16px", // Adjust padding as needed
-              textTransform: "uppercase", // Uppercase button text
-              boxShadow: "none", // Remove box shadow
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <AddCircleOutlineIcon sx={{ fontSize: "1rem" }} />{" "}
-              <Typography variant="button" component="span">
-                New Task
-              </Typography>
-            </Box>
-          </Button>
-          <AddNewTaskModal open={openModal} onClose={handleCloseModal} />
-        </div>
-      );
-    }
   };
 
   return (
@@ -129,7 +86,6 @@ function App() {
               <MenuIcon />
             </IconButton>
           </Box>
-          {appBarContent()}
         </Toolbar>
       </AppBar>
       <Sidebar

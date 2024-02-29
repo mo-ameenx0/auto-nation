@@ -70,12 +70,9 @@ export default function RoutersPage() {
     }
   };
 
-  // ... other code remains the same
-
   const handleRemoveRouter = (routerId) => {
-    // Filter out the router with the specified ID
     const updatedRouters = routers.filter((router) => router._id !== routerId);
-    setRouters(updatedRouters); // Update the state
+    setRouters(updatedRouters);
   };
 
   return (

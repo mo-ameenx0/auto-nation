@@ -57,6 +57,20 @@ endpoints.route("/updateTask/:id").put(async (req, response) => {
   }
 });
 
+endpoints.route("/deleteTask/:id").delete(async (req, response) => {
+  try {
+    let db = dbo.getDb();
+    let query = { _id: new ObjectId(req.params.id) };
+
+    await db.collection(TASKS).deleteOne(query);
+
+    response.status(200).json({ message: "task successfuly deleted" });
+  } catch (error) {
+    console.error(error);
+    response.status(500).json({ message: "an error occured" });
+  }
+});
+
 /*
  ******************* Routers Endpoints *******************
  */
@@ -166,13 +180,12 @@ const executeSSHCommands = (sshDetails, res) => {
     })
     .connect({
       host: host,
-      port: 22, // Default SSH port
+      port: 22,
       username: username,
-      password: password, // Using password for authentication
+      password: password,
     });
 };
 
-// Define a route for SSH command execution
 endpoints.post("/execute-commands", (req, res) => {
   const { host, username, password, commands } = req.body;
   if (
