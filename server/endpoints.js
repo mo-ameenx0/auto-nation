@@ -1,5 +1,5 @@
 const express = require("express");
-const sshClient = require("ssh2");
+const { Client } = require("ssh2");
 
 const endpoints = express.Router();
 
@@ -136,10 +136,10 @@ endpoints.route("/getTopology").get(async (req, response) => {
 const executeSSHCommands = (sshDetails, res) => {
   const { host, username, password, commands } = sshDetails;
 
-  const conn = new sshClient();
+  const conn = new Client();
   conn
     .on("ready", () => {
-      console.log("sshClient :: ready");
+      console.log("Client :: ready");
       // Join the commands array into a single command string separated by "&&" to execute them sequentially
       const commandString = commands.join(" && ");
 
