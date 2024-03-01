@@ -14,7 +14,7 @@ import RoutersPage from "./RoutersPage/RoutersPage";
 import TasksPage from "./TasksPage/TasksPage";
 import TopologyPage from "./TopologyPage/TopologyPage";
 import BackupPage from "./BackupPage/BackupPage";
-import NotFoundPage from "./RoutingPages.js/NotFoundPage";
+import NotFoundPage from "./OtherPages/NotFoundPage";
 import "./App.css";
 
 const HOME = "Home";
