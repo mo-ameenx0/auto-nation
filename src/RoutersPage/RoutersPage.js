@@ -1,34 +1,28 @@
 import React from "react";
-import {
-  Container,
-  Grid,
-  DialogTitle,
-  Button,
-  Dialog,
-  DialogContent,
-  TextField,
-  DialogActions,
-} from "@mui/material";
+import { Container, Grid, Button } from "@mui/material";
+
+import AddDialog from "../Dialogs/AddDialog";
 import RouterRow from "./RouterRow";
 import endpoints from "../endpoints";
 
 export default function RoutersPage() {
-  const [open, setOpen] = React.useState(false);
   const [routers, setRouters] = React.useState([]);
+
+  const [dialogState, setDialogState] = React.useState(false);
+  const openDialog = () => setDialogState(true);
+  const closeDialog = () => setDialogState(false);
+
   const [newRouter, setNewRouter] = React.useState({
     name: "",
+    type: "",
     ip: "",
     username: "",
     password: "",
   });
 
-  const handleInputChange = (event) => {
-    const { id, value } = event.target;
-    setNewRouter((prevRouter) => ({
-      ...prevRouter,
-      [id]: value,
-    }));
-  };
+  React.useEffect(() => {
+    fetchRouters();
+  }, []);
 
   const fetchRouters = async () => {
     try {
@@ -42,29 +36,16 @@ export default function RoutersPage() {
     }
   };
 
-  React.useEffect(() => {
-    fetchRouters();
-  }, []);
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleAddRouter = async (routerData) => {
+  const handleAddNewRouter = async (routerData) => {
     try {
-      const response = await fetch(endpoints.insertRouter, {
+      await fetch(endpoints.insertRouter, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newRouter),
       });
-      const result = await response.json();
-      console.log("Success:", result);
-      handleClose();
+      closeDialog();
     } catch (error) {
       console.error("Error:", error);
     }
@@ -83,7 +64,7 @@ export default function RoutersPage() {
         sx={{ margin: 2 }}
         style={{ display: "flex", justifyContent: "flex-start" }}
       >
-        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+        <Button variant="contained" color="primary" onClick={openDialog}>
           Add Device
         </Button>
       </Grid>
@@ -96,56 +77,13 @@ export default function RoutersPage() {
           />
         ))}
       </Grid>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Add a New Device</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={newRouter.name}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            id="ip"
-            label="IP Address"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={newRouter.ip}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            id="username"
-            label="Username"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={newRouter.username}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            id="password"
-            label="Password"
-            type="password"
-            fullWidth
-            variant="standard"
-            value={newRouter.password}
-            onChange={handleInputChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleAddRouter}>Add</Button>
-        </DialogActions>
-      </Dialog>
+      <AddDialog
+        dialogState={dialogState}
+        fields={newRouter}
+        onAdd={handleAddNewRouter}
+        closeDialog={closeDialog}
+        setNew={setNewRouter}
+      />
     </Container>
   );
 }

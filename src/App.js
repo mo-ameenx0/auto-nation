@@ -9,7 +9,7 @@ import HubIcon from "@mui/icons-material/Hub";
 import BackupIcon from "@mui/icons-material/Backup";
 
 import Sidebar from "./Sidebar";
-import HomePage from "./HomePage";
+import HomePage from "./HomePage/HomePage";
 import RoutersPage from "./RoutersPage/RoutersPage";
 import TasksPage from "./TasksPage/TasksPage";
 import TopologyPage from "./TopologyPage/TopologyPage";
@@ -20,7 +20,7 @@ import "./App.css";
 const HOME = "Home";
 const ROUTERS = "Routers";
 const TASKS = "Tasks";
-const TOPOLOGY = "TOPOLOGY";
+const TOPOLOGY = "Topology";
 const BACKUP = "Backup";
 
 const ROUTES = [

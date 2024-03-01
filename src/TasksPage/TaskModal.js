@@ -15,13 +15,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import endpoints from "../endpoints";
 
 export default function AddNewTaskModal({ open, onClose, task }) {
-  const [taskName, setTaskName] = React.useState(task ? task.taskName : "");
+  const [name, setName] = React.useState(task ? task.name : "");
   const [steps, setSteps] = React.useState(
     task ? task.steps : [{ id: Date.now(), name: "", commands: [""] }]
   );
 
   const handleTaskNameChange = (event) => {
-    setTaskName(event.target.value);
+    setName(event.target.value);
   };
 
   const handleStepChange = (id, event) => {
@@ -94,7 +94,7 @@ export default function AddNewTaskModal({ open, onClose, task }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ taskName, steps }),
+          body: JSON.stringify({ name, steps }),
         });
       }
       // insert new task
@@ -104,12 +104,13 @@ export default function AddNewTaskModal({ open, onClose, task }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ taskName, steps }),
+          body: JSON.stringify({ name, steps }),
         });
       }
 
       const result = await response.json();
       console.log("Success:", result);
+      onClose();
     } catch (error) {
       console.error("Error:", error);
     }
@@ -143,7 +144,7 @@ export default function AddNewTaskModal({ open, onClose, task }) {
           <TextField
             fullWidth
             label="Task Name"
-            value={taskName}
+            value={name}
             onChange={handleTaskNameChange}
             margin="normal"
           />

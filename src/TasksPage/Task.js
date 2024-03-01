@@ -53,22 +53,29 @@ export default function Task({ task, onRemove }) {
         alignItems="center"
         spacing={2}
       >
-        <Typography variant="h5">{task.taskName}</Typography>
+        <Typography variant="h5">{task.name}</Typography>
         <Box>
-          <IconButton
-            aria-label="edit task"
-            size="large"
-            onClick={handleOpenModal}
-          >
-            <EditIcon />
-          </IconButton>
-          <IconButton
-            aria-label="delete task"
-            size="large"
-            onClick={openDialog}
-          >
-            <DeleteIcon />
-          </IconButton>
+          {onRemove ? (
+            <Box>
+              {" "}
+              <IconButton
+                aria-label="edit task"
+                size="large"
+                onClick={handleOpenModal}
+              >
+                <EditIcon />
+              </IconButton>
+              <IconButton
+                aria-label="delete task"
+                size="large"
+                onClick={openDialog}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ) : (
+            ""
+          )}
         </Box>
       </Stack>
       <Divider sx={{ my: 2 }} />
