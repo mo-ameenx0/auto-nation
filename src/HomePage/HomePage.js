@@ -10,6 +10,7 @@ import {
 
 import DevicesTable from "./DevicesTable";
 import TaskSelection from "./TaskSelection";
+import TaskExecutor from "./TaskExecutor";
 
 const steps = ["Select Tasks", "Run Tasks"];
 
@@ -68,9 +69,12 @@ export default function HomePage() {
         );
       case 1:
         return (
-          <Button variant="contained" color="primary" onClick={handleReset}>
-            Go Back
-          </Button>
+          <Box>
+            <TaskExecutor devices={selectedDevices} tasks={selectedTasks} />
+            <Button variant="contained" color="primary" onClick={handleReset}>
+              Go Back
+            </Button>
+          </Box>
         );
       default:
         return "Unknown step";

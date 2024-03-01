@@ -18,7 +18,6 @@ export default function DevicesTable({ selectedDevices, setSelectedDevices }) {
     try {
       const response = await fetch(endpoints.getRouters);
       const devices = await response.json();
-
       setDevices(devices);
     } catch (error) {
       console.error("failed to fetch routers:", error);
@@ -29,27 +28,18 @@ export default function DevicesTable({ selectedDevices, setSelectedDevices }) {
     fetchDevices();
   }, []);
 
-  const handleSelect = (event, id) => {
-    const selectedIndex = selectedDevices.indexOf(id);
-    let newSelected = [];
+  const handleSelect = (event, device) => {
+    const isSelected = selectedDevices.some((d) => d._id === device._id);
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selectedDevices, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selectedDevices.slice(1));
-    } else if (selectedIndex === selectedDevices.length - 1) {
-      newSelected = newSelected.concat(selectedDevices.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selectedDevices.slice(0, selectedIndex),
-        selectedDevices.slice(selectedIndex + 1)
-      );
+    if (isSelected) {
+      setSelectedDevices(selectedDevices.filter((d) => d._id !== device._id));
+    } else {
+      setSelectedDevices([...selectedDevices, device]);
     }
-
-    setSelectedDevices(newSelected);
   };
 
-  const isSelected = (id) => selectedDevices.indexOf(id) !== -1;
+  const isSelected = (device) =>
+    selectedDevices.some((d) => d._id === device._id);
 
   return (
     <TableContainer component={Paper}>
@@ -65,7 +55,7 @@ export default function DevicesTable({ selectedDevices, setSelectedDevices }) {
         </TableHead>
         <TableBody>
           {endDevices.map((row) => {
-            const isItemSelected = isSelected(row._id);
+            const isItemSelected = isSelected(row);
             return (
               <TableRow
                 key={row._id}
@@ -78,7 +68,7 @@ export default function DevicesTable({ selectedDevices, setSelectedDevices }) {
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={isItemSelected}
-                    onChange={(event) => handleSelect(event, row._id)}
+                    onChange={(event) => handleSelect(event, row)}
                   />
                 </TableCell>
                 <TableCell>{row.name}</TableCell>

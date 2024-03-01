@@ -154,7 +154,6 @@ const executeSSHCommands = (sshDetails, res) => {
   conn
     .on("ready", () => {
       console.log("Client :: ready");
-      // Join the commands array into a single command string separated by "&&" to execute them sequentially
       const commandString = commands.join(" && ");
 
       conn.exec(commandString, (err, stream) => {
@@ -166,11 +165,11 @@ const executeSSHCommands = (sshDetails, res) => {
               "Stream :: close :: code: " + code + ", signal: " + signal
             );
             conn.end();
-            res.send(output); // Send the combined output of all commands
+            res.send(output);
           })
           .on("data", (data) => {
             console.log("STDOUT: " + data);
-            output += data; // Append each command's output to the output variable
+            output += data;
           })
           .stderr.on("data", (data) => {
             console.log("STDERR: " + data);
@@ -186,7 +185,8 @@ const executeSSHCommands = (sshDetails, res) => {
     });
 };
 
-endpoints.post("/execute-commands", (req, res) => {
+endpoints.post("/executeCommands", (req, res) => {
+  console.log(req.body);
   const { host, username, password, commands } = req.body;
   if (
     !host ||

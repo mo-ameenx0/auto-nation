@@ -9,6 +9,8 @@ const endpoints = {
   getRouters: `${API_BASE_URL}/getRouters`,
   insertRouter: `${API_BASE_URL}/insertRouter`,
   deleteRouter: `${API_BASE_URL}/deleteRouter`,
+
+  executeCommands: `${API_BASE_URL}/executeCommands`,
 };
 
 export default endpoints;
