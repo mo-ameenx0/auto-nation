@@ -1,5 +1,5 @@
 const express = require("express");
-const { Client } = require("ssh2");
+const { Client, utils } = require("ssh2");
 
 const endpoints = express.Router();
 
@@ -182,11 +182,44 @@ const executeSSHCommands = (sshDetails, res) => {
       port: 22,
       username: username,
       password: password,
+      algorithms: {
+        cipher: [
+          "aes256-cbc", // Your custom cipher
+          "aes128-ctr",
+          "aes192-ctr",
+          "aes256-ctr", // Common defaults
+          "aes128-gcm",
+          "aes128-gcm@openssh.com",
+          "aes256-gcm",
+          "aes256-gcm@openssh.com", // More defaults, including GCM for newer versions
+        ],
+        hostKeyAlgorithms: [
+          "ssh-rsa", // Your custom host key algorithm
+          "ssh-ed25519",
+          "ecdsa-sha2-nistp256", // Common defaults
+          "ecdsa-sha2-nistp384",
+          "ecdsa-sha2-nistp521", // More ECDSA defaults
+        ],
+        kex: [
+          "diffie-hellman-group1-sha1", // Your custom KEX algorithm
+          "ecdh-sha2-nistp256",
+          "ecdh-sha2-nistp384",
+          "ecdh-sha2-nistp521", // ECDH defaults
+          "diffie-hellman-group-exchange-sha256", // DH group exchange
+          "diffie-hellman-group14-sha256", // More secure DH defaults
+        ],
+        serverHostKeyAlgs: [
+          "ssh-rsa", // Your custom public key algorithm for server host keys
+          "ssh-ed25519",
+          "ecdsa-sha2-nistp256", // Common defaults
+          "ecdsa-sha2-nistp384",
+          "ecdsa-sha2-nistp521", // More ECDSA defaults
+        ],
+      },
     });
 };
 
 endpoints.post("/executeCommands", (req, res) => {
-  console.log(req.body);
   const { host, username, password, commands } = req.body;
   if (
     !host ||
