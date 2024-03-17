@@ -158,7 +158,7 @@ const executeSSHCommands = (sshDetails, res) => {
 
       const executeCommand = (index) => {
         if (index >= commands.length) {
-          // All commands executed
+          console.log("All commands executed, closing connection.");
           conn.end();
           res.send(output);
           return;
@@ -178,9 +178,8 @@ const executeSSHCommands = (sshDetails, res) => {
           stream
             .on("close", (code, signal) => {
               console.log(
-                `Command ${index} :: close :: code: ${code}, signal: ${signal}`
+                `Command ${index} execution completed with code: ${code}, signal: ${signal}`
               );
-              // Execute next command
               executeCommand(index + 1);
             })
             .on("data", (data) => {
@@ -189,13 +188,18 @@ const executeSSHCommands = (sshDetails, res) => {
             })
             .stderr.on("data", (data) => {
               console.error(`STDERR: ${data}`);
-              output += `ERROR: ${data}`; // Consider appending errors to the output instead of immediately sending a response
+              output += `ERROR: ${data}`;
             });
         });
       };
 
-      // Start executing commands from the first one
       executeCommand(0);
+    })
+    .on("close", () => {
+      console.log("Connection closed.");
+    })
+    .on("end", () => {
+      console.log("Connection ended by the server.");
     })
     .connect({
       host: host,
