@@ -1,5 +1,5 @@
 const express = require("express");
-const { Client, utils } = require("ssh2");
+const SSH2Shell = require("ssh2shell");
 
 const endpoints = express.Router();
 
@@ -150,61 +150,11 @@ endpoints.route("/getTopology").get(async (req, response) => {
 const executeSSHCommands = (sshDetails, res) => {
   const { host, username, password, commands } = sshDetails;
 
-  const conn = new Client();
-  conn
-    .on("ready", () => {
-      console.log("Client :: ready");
-      let output = "";
-
-      const executeCommand = (index) => {
-        if (index >= commands.length) {
-          console.log("All commands executed, closing connection.");
-          conn.end();
-          res.send(output);
-          return;
-        }
-
-        const command = commands[index];
-        console.log(`Executing command: ${command}`);
-
-        conn.exec(command, (err, stream) => {
-          if (err) {
-            console.error("Error executing command:", err);
-            conn.end();
-            res.status(500).send(err.toString());
-            return;
-          }
-
-          stream
-            .on("close", (code, signal) => {
-              console.log(
-                `Command ${index} execution completed with code: ${code}, signal: ${signal}`
-              );
-              executeCommand(index + 1);
-            })
-            .on("data", (data) => {
-              console.log(`STDOUT: ${data}`);
-              output += data;
-            })
-            .stderr.on("data", (data) => {
-              console.error(`STDERR: ${data}`);
-              output += `ERROR: ${data}`;
-            });
-        });
-      };
-
-      executeCommand(0);
-    })
-    .on("close", () => {
-      console.log("Connection closed.");
-    })
-    .on("end", () => {
-      console.log("Connection ended by the server.");
-    })
-    .connect({
+  let SSHHost = {
+    server: {
       host: host,
       port: 22,
-      username: username,
+      userName: username,
       password: password,
       algorithms: {
         cipher: [
@@ -240,7 +190,22 @@ const executeSSHCommands = (sshDetails, res) => {
           "ecdsa-sha2-nistp521",
         ],
       },
-    });
+    },
+    commands: commands,
+    onEnd: function (sessionText, sshObj) {
+      console.log("Session ended");
+      res.send(sessionText); // Send the session output back in the response
+    },
+  };
+
+  let ssh = new SSH2Shell(SSHHost);
+
+  ssh.on("error", function (err, type, close, callback) {
+    console.log("Error occurred: " + err);
+    res.status(500).send(err.toString());
+  });
+
+  ssh.connect();
 };
 
 endpoints.post("/executeCommands", (req, res) => {
