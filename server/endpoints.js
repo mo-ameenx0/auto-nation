@@ -154,28 +154,43 @@ const executeSSHCommands = (sshDetails, res) => {
   conn
     .on("ready", () => {
       console.log("Client :: ready");
-      const commandString = commands.join(" && ");
+      let output = "";
 
-      conn.exec(commandString, (err, stream) => {
-        if (err) throw err;
-        let output = "";
-        stream
-          .on("close", (code, signal) => {
-            console.log(
-              "Stream :: close :: code: " + code + ", signal: " + signal
-            );
-            conn.end();
-            res.send(output);
-          })
-          .on("data", (data) => {
-            console.log("STDOUT: " + data);
-            output += data;
-          })
-          .stderr.on("data", (data) => {
-            console.log("STDERR: " + data);
-            res.status(500).send(data.toString());
-          });
-      });
+      const executeCommand = (index) => {
+        if (index >= commands.length) {
+          // All commands executed
+          conn.end();
+          res.send(output);
+          return;
+        }
+
+        const command = commands[index];
+        console.log(`Executing command: ${command}`);
+
+        conn.exec(command, (err, stream) => {
+          if (err) throw err;
+
+          stream
+            .on("close", (code, signal) => {
+              console.log(
+                `Command ${index} :: close :: code: ${code}, signal: ${signal}`
+              );
+              // Execute next command
+              executeCommand(index + 1);
+            })
+            .on("data", (data) => {
+              console.log(`STDOUT: ${data}`);
+              output += data;
+            })
+            .stderr.on("data", (data) => {
+              console.log(`STDERR: ${data}`);
+              res.status(500).send(data.toString());
+            });
+        });
+      };
+
+      // Start executing commands from the first one
+      executeCommand(0);
     })
     .connect({
       host: host,
@@ -184,36 +199,36 @@ const executeSSHCommands = (sshDetails, res) => {
       password: password,
       algorithms: {
         cipher: [
-          "aes256-cbc", // Your custom cipher
+          "aes256-cbc",
           "aes128-ctr",
           "aes192-ctr",
-          "aes256-ctr", // Common defaults
+          "aes256-ctr",
           "aes128-gcm",
           "aes128-gcm@openssh.com",
           "aes256-gcm",
-          "aes256-gcm@openssh.com", // More defaults, including GCM for newer versions
+          "aes256-gcm@openssh.com",
         ],
         hostKeyAlgorithms: [
-          "ssh-rsa", // Your custom host key algorithm
+          "ssh-rsa",
           "ssh-ed25519",
-          "ecdsa-sha2-nistp256", // Common defaults
+          "ecdsa-sha2-nistp256",
           "ecdsa-sha2-nistp384",
-          "ecdsa-sha2-nistp521", // More ECDSA defaults
+          "ecdsa-sha2-nistp521",
         ],
         kex: [
-          "diffie-hellman-group1-sha1", // Your custom KEX algorithm
+          "diffie-hellman-group1-sha1",
           "ecdh-sha2-nistp256",
           "ecdh-sha2-nistp384",
-          "ecdh-sha2-nistp521", // ECDH defaults
-          "diffie-hellman-group-exchange-sha256", // DH group exchange
-          "diffie-hellman-group14-sha256", // More secure DH defaults
+          "ecdh-sha2-nistp521",
+          "diffie-hellman-group-exchange-sha256",
+          "diffie-hellman-group14-sha256",
         ],
         serverHostKeyAlgs: [
-          "ssh-rsa", // Your custom public key algorithm for server host keys
+          "ssh-rsa",
           "ssh-ed25519",
-          "ecdsa-sha2-nistp256", // Common defaults
+          "ecdsa-sha2-nistp256",
           "ecdsa-sha2-nistp384",
-          "ecdsa-sha2-nistp521", // More ECDSA defaults
+          "ecdsa-sha2-nistp521",
         ],
       },
     });
