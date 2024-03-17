@@ -168,7 +168,12 @@ const executeSSHCommands = (sshDetails, res) => {
         console.log(`Executing command: ${command}`);
 
         conn.exec(command, (err, stream) => {
-          if (err) throw err;
+          if (err) {
+            console.error("Error executing command:", err);
+            conn.end();
+            res.status(500).send(err.toString());
+            return;
+          }
 
           stream
             .on("close", (code, signal) => {
@@ -183,8 +188,8 @@ const executeSSHCommands = (sshDetails, res) => {
               output += data;
             })
             .stderr.on("data", (data) => {
-              console.log(`STDERR: ${data}`);
-              res.status(500).send(data.toString());
+              console.error(`STDERR: ${data}`);
+              output += `ERROR: ${data}`; // Consider appending errors to the output instead of immediately sending a response
             });
         });
       };
