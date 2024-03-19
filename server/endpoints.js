@@ -192,9 +192,37 @@ const executeSSHCommands = (sshDetails, res) => {
       },
     },
     commands: commands,
+    readyTimeout: 50000,
+    tryKeyboard: true,
+    verbose: true,
+    debug: true,
+    idleTimeOut: 15000,
+    connectedMessage: "connected",
+    readyMessage: "ready",
+    closedMessage: "closed",
+    ["keyboard-interactive"]: function (
+      name,
+      instructions,
+      instructionsLang,
+      prompts,
+      finish
+    ) {
+      console.log("Connection :: keyboard-interactive");
+      console.log(prompts);
+      finish(["<password>"]);
+    },
+    msg: {
+      send: function (message) {
+        console.log("message: " + message);
+      },
+    },
+    onCommandComplete: function (command, response, sshObj) {
+      console.log("------------- onCommandComplete ---------");
+      console.log(command + ": " + response);
+    },
     onEnd: function (sessionText, sshObj) {
-      console.log("Session ended");
-      res.send(sessionText); // Send the session output back in the response
+      console.log("--------- onEnd has ------------");
+      console.log(sessionText);
     },
   };
 
