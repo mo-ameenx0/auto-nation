@@ -39,6 +39,18 @@ export default function Task({ task, onRemove }) {
     onRemove(task._id);
   };
 
+  function onCommandChange(stepId, commandIdentifier, updatedCommand) {
+    const stepIndex = task.steps.findIndex((step) => step.id === stepId);
+    if (stepIndex !== -1) {
+      const commandIndex = task.steps[stepIndex].commands.findIndex(
+        (cmd, index) => index === commandIdentifier
+      );
+      if (commandIndex !== -1) {
+        task.steps[stepIndex].commands[commandIndex] = updatedCommand;
+      }
+    }
+  }
+
   return (
     <Paper
       sx={{
@@ -81,7 +93,7 @@ export default function Task({ task, onRemove }) {
       <Divider sx={{ my: 2 }} />
       <Stack direction="column" spacing={2}>
         {task.steps.map((step) => (
-          <Step step={step} key={step.id} />
+          <Step step={step} key={step.id} onCommandChange={onCommandChange} />
         ))}
       </Stack>
       <ConfirmationDialog

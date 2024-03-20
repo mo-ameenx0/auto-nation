@@ -21,6 +21,7 @@ export default function HomePage() {
   const [selectedTasks, setSelectedTasks] = React.useState([]);
 
   const handleReset = () => {
+    setSelectedDevices([]);
     setSelectedTasks([]);
     setActiveStep(0);
   };

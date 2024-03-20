@@ -10,7 +10,12 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Command from "./Command";
 
-export default function Step({ step }) {
+export default function Step({ step, onCommandChange }) {
+  function handleCommandChange(updatedCommand, commandIdx) {
+    if (onCommandChange) {
+      onCommandChange(step.id, commandIdx, updatedCommand);
+    }
+  }
   return (
     <Accordion
       sx={{
@@ -38,7 +43,8 @@ export default function Step({ step }) {
         {step.commands.map((command, cmdIndex) => (
           <Command
             command={command}
-            commandNumber={cmdIndex + 1}
+            commandIdx={cmdIndex}
+            onCommandChange={handleCommandChange}
             key={cmdIndex}
           />
         ))}
