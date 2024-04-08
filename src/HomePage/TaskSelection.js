@@ -2,6 +2,7 @@ import React from "react";
 import { Chip, Stack, Paper, Box } from "@mui/material";
 import endpoints from "../endpoints";
 import Task from "../TasksPage/Task";
+import { Margin } from "@mui/icons-material";
 const TaskSelection = ({ selectedTasks, setSelectedTasks }) => {
   const [tasks, setTasks] = React.useState([]);
 
@@ -39,6 +40,7 @@ const TaskSelection = ({ selectedTasks, setSelectedTasks }) => {
         <Stack direction="row" spacing={1} flexWrap="wrap">
           {tasks.map((task) => (
             <Chip
+              style={{ margin: "5px" }}
               key={task._id}
               label={task.name}
               onClick={() => handleToggle(task)}
