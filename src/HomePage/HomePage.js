@@ -26,7 +26,7 @@ export default function HomePage() {
     setActiveStep(0);
   };
   const handleNext = () => {
-    if (activeStep === steps.length) {
+    if (activeStep === 1) {
       handleReset();
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -34,12 +34,6 @@ export default function HomePage() {
   };
 
   const runTasks = () => {
-    console.log(
-      "Executing tasks:",
-      selectedTasks,
-      "on devices:",
-      selectedDevices
-    );
     handleNext();
   };
 
@@ -72,13 +66,13 @@ export default function HomePage() {
         return (
           <Box>
             <TaskExecutor devices={selectedDevices} tasks={selectedTasks} />
-            <Button variant="contained" color="primary" onClick={handleReset}>
-              Go Back
-            </Button>
+            <Box mt={2}>
+              <Button variant="contained" color="primary" onClick={runTasks}>
+                Go Back
+              </Button>
+            </Box>
           </Box>
         );
-      default:
-        return "Unknown step";
     }
   };
 

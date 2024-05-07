@@ -150,6 +150,8 @@ endpoints.route("/getTopology").get(async (req, response) => {
 const executeSSHCommands = (sshDetails, res) => {
   const { host, username, password, commands } = sshDetails;
 
+  let commandResponses = [];
+
   let SSHHost = {
     server: {
       host: host,
@@ -203,12 +205,10 @@ const executeSSHCommands = (sshDetails, res) => {
       },
     },
     onCommandComplete: function (command, response, sshObj) {
-      console.log("------------- onCommandComplete ---------");
-      console.log(command + ": " + response);
+      commandResponses.push({ command, response });
     },
     onEnd: function (sessionText, sshObj) {
-      console.log("--------- onEnd has ------------");
-      console.log(sessionText);
+      res.status(200).json(commandResponses);
     },
   };
 
@@ -216,7 +216,8 @@ const executeSSHCommands = (sshDetails, res) => {
 
   ssh.on("error", function (err, type, close, callback) {
     console.log("Error occurred: " + err);
-    res.status(500).send(err.toString());
+
+    res.status(500).json({ error: err.toString(), commandResponses });
   });
 
   ssh.connect();

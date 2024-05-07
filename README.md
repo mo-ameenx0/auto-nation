@@ -52,6 +52,7 @@ the necessary values.
    Router(config)#line vty 0 4
    Router(config-line)#transport input ssh
    Router(config-line)#login local
+   Router(config-line)#terminal length 0
    ```
 
 8. Verify configurations

@@ -2,16 +2,16 @@ import React from "react";
 import { Chip, Stack, Paper, Box } from "@mui/material";
 import endpoints from "../endpoints";
 import Task from "../TasksPage/Task";
-import { Margin } from "@mui/icons-material";
+
 const TaskSelection = ({ selectedTasks, setSelectedTasks }) => {
   const [tasks, setTasks] = React.useState([]);
 
   const fetchTasks = async () => {
     try {
       const response = await fetch(endpoints.getTasks);
-      const devices = await response.json();
+      const tasks = await response.json();
 
-      setTasks(devices);
+      setTasks(tasks);
     } catch (error) {
       console.error("failed to fetch tasks:", error);
     }

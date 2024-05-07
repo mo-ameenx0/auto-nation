@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
-  CircularProgress,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Snackbar,
-  Alert,
+  Card,
+  CardContent,
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Container,
+  Divider,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import endpoints from "../endpoints";
 
 const TaskExecutor = ({ devices, tasks }) => {
-  console.log(tasks);
-  const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
-  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
-  const [errors, setErrors] = useState([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [commandResults, setCommandResults] = useState({});
 
   const executeTaskOnDevice = async (device, task) => {
     try {
@@ -37,71 +34,83 @@ const TaskExecutor = ({ devices, tasks }) => {
           commands: combinedCommands,
         }),
       });
+
       if (!response.ok) throw new Error("Network response was not ok.");
-      // Handle response if needed
+
+      let res = await response.json();
+      setCommandResults((prev) => ({ ...prev, [device._id + task._id]: res }));
     } catch (error) {
-      setErrors((prev) => [
-        ...prev,
-        { task: task.id, device: device.id, error: error.message },
-      ]);
-      setOpenSnackbar(true);
+      console.error("An error occurred:", error.message);
     }
   };
 
   useEffect(() => {
-    if (
-      currentDeviceIndex < devices.length &&
-      currentTaskIndex < tasks.length
-    ) {
-      const currentDevice = devices[currentDeviceIndex];
-      const currentTask = tasks[currentTaskIndex];
-      executeTaskOnDevice(currentDevice, currentTask);
-
-      // Prepare for the next iteration
-      const nextDeviceIndex = currentDeviceIndex + 1;
-      if (nextDeviceIndex >= devices.length) {
-        setCurrentTaskIndex(currentTaskIndex + 1);
-        setCurrentDeviceIndex(0);
-      } else {
-        setCurrentDeviceIndex(nextDeviceIndex);
-      }
-    }
-  }, [currentDeviceIndex, currentTaskIndex, devices, tasks]);
+    tasks.forEach((task) => {
+      devices.forEach((device) => {
+        executeTaskOnDevice(device, task);
+      });
+    });
+  }, [devices, tasks]);
 
   return (
-    <Box>
-      <List>
-        {devices.map((device, index) => (
-          <ListItem key={device._id}>
-            <ListItemText primary={`Device ${index + 1}`} />
-            {index === currentDeviceIndex && currentTaskIndex < tasks.length ? (
-              <ListItemIcon>
-                <CircularProgress size={24} />
-              </ListItemIcon>
-            ) : (
-              <ListItemIcon />
-            )}
-            <ListItemText primary={`t${currentTaskIndex + 1}`} />
-          </ListItem>
-        ))}
-      </List>
-      {errors.map((error, index) => (
-        <Snackbar
-          key={index}
-          open={openSnackbar}
-          autoHideDuration={6000}
-          onClose={() => setOpenSnackbar(false)}
-        >
-          <Alert
-            onClose={() => setOpenSnackbar(false)}
-            severity="error"
-            sx={{ width: "100%" }}
-          >
-            Error in task {error.task} on device {error.device}: {error.error}
-          </Alert>
-        </Snackbar>
+    <Container maxWidth="xl">
+      {devices.map((device) => (
+        <Card key={device._id} variant="outlined">
+          <CardContent>
+            <Typography variant="h5" component="div" sx={{ marginBottom: 2 }}>
+              {device.name} ({device.ip})
+            </Typography>
+            <Typography color="textSecondary" sx={{ marginBottom: 1 }}>
+              Type: {device.type}
+            </Typography>
+            {tasks.map((task, index) => (
+              <Accordion key={task._id} sx={{ margin: "10px 0" }}>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls={`task-content-${task._id}`}
+                  id={`task-header-${task._id}`}
+                >
+                  <Typography>{task.name}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {task.steps.map((step, stepIndex) => (
+                    <React.Fragment key={step.id}>
+                      {step.commands.map((command, commandIndex) => {
+                        const key = `${step.id}-${commandIndex}`;
+                        const response =
+                          commandResults[device._id + task._id]?.[commandIndex]
+                            ?.response || "No response yet.";
+                        return (
+                          <div key={key}>
+                            <Typography
+                              variant="subtitle1"
+                              gutterBottom
+                              sx={{ marginTop: 2 }}
+                            >
+                              <strong>{command}</strong>
+                            </Typography>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                whiteSpace: "pre-wrap",
+                                margin: "8px 0 20px",
+                              }}
+                            >
+                              {response}
+                            </Typography>
+                            <Divider sx={{ marginBottom: 2 }} />
+                          </div>
+                        );
+                      })}
+                    </React.Fragment>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            ))}
+          </CardContent>
+        </Card>
       ))}
-    </Box>
+    </Container>
   );
 };
 
