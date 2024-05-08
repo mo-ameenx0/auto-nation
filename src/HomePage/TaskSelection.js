@@ -36,7 +36,7 @@ const TaskSelection = ({ selectedTasks, setSelectedTasks }) => {
 
   return (
     <Box>
-      <Paper style={{ padding: "10px", marginBottom: "20px" }} key={1234}>
+      <Paper style={{ padding: "10px", marginBottom: "20px" }}>
         <Stack direction="row" spacing={1} flexWrap="wrap">
           {tasks.map((task) => (
             <Chip

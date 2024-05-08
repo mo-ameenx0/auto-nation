@@ -6,7 +6,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Container,
+  Box,
   Divider,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -53,7 +53,7 @@ const TaskExecutor = ({ devices, tasks }) => {
   }, [devices, tasks]);
 
   return (
-    <Container maxWidth="xl">
+    <Box>
       {devices.map((device) => (
         <Card key={device._id} variant="outlined">
           <CardContent>
@@ -110,7 +110,7 @@ const TaskExecutor = ({ devices, tasks }) => {
           </CardContent>
         </Card>
       ))}
-    </Container>
+    </Box>
   );
 };
 

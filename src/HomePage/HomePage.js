@@ -12,7 +12,7 @@ import DevicesTable from "./DevicesTable";
 import TaskSelection from "./TaskSelection";
 import TaskExecutor from "./TaskExecutor";
 
-const steps = ["Select Tasks", "Run Tasks"];
+const steps = ["Tasks Selection", "Tasks Output"];
 
 export default function HomePage() {
   const [activeStep, setActiveStep] = React.useState(0);
