@@ -6,14 +6,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import RouterIcon from "@mui/icons-material/Router";
 import TaskIcon from "@mui/icons-material/Task";
 import HubIcon from "@mui/icons-material/Hub";
-import BackupIcon from "@mui/icons-material/Backup";
 
 import Sidebar from "./Sidebar";
 import HomePage from "./HomePage/HomePage";
 import RoutersPage from "./RoutersPage/RoutersPage";
 import TasksPage from "./TasksPage/TasksPage";
 import TopologyPage from "./TopologyPage/TopologyPage";
-import BackupPage from "./BackupPage/BackupPage";
 import NotFoundPage from "./OtherPages/NotFoundPage";
 import "./App.css";
 
@@ -21,7 +19,6 @@ const HOME = "Home";
 const ROUTERS = "Routers";
 const TASKS = "Tasks";
 const TOPOLOGY = "Topology";
-const BACKUP = "Backup";
 
 const ROUTES = [
   {
@@ -47,12 +44,6 @@ const ROUTES = [
     PATH: TOPOLOGY,
     ICON: <HubIcon />,
     ELEMENT: <TopologyPage />,
-  },
-  {
-    NAME: BACKUP,
-    PATH: BACKUP,
-    ICON: <BackupIcon />,
-    ELEMENT: <BackupPage />,
   },
 ];
 
