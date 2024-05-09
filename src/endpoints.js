@@ -11,6 +11,7 @@ const endpoints = {
   deleteRouter: `${API_BASE_URL}/deleteRouter`,
 
   executeCommands: `${API_BASE_URL}/executeCommands`,
+  checkConnectivity: `${API_BASE_URL}/checkConnectivity`,
 };
 
 export default endpoints;

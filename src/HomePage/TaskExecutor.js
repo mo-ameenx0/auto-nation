@@ -8,11 +8,12 @@ import {
   AccordionDetails,
   Box,
   Divider,
+  CircularProgress,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import endpoints from "../endpoints";
 
-const TaskExecutor = ({ devices, tasks }) => {
+export default function TaskExecutor({ devices, tasks }) {
   const [commandResults, setCommandResults] = useState({});
 
   const executeTaskOnDevice = async (device, task) => {
@@ -77,9 +78,9 @@ const TaskExecutor = ({ devices, tasks }) => {
                     <React.Fragment key={step.id}>
                       {step.commands.map((command, commandIndex) => {
                         const key = `${step.id}-${commandIndex}`;
-                        const response =
-                          commandResults[device._id + task._id]?.[commandIndex]
-                            ?.response || "No response yet.";
+                        const response = commandResults[
+                          device._id + task._id
+                        ]?.[commandIndex]?.response || <CircularProgress />;
                         return (
                           <div key={key}>
                             <Typography
@@ -112,6 +113,4 @@ const TaskExecutor = ({ devices, tasks }) => {
       ))}
     </Box>
   );
-};
-
-export default TaskExecutor;
+}

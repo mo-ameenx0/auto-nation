@@ -147,6 +147,41 @@ endpoints.route("/getTopology").get(async (req, response) => {
  */
 
 // SSH connection function
+const ALGORITHMS = {
+  cipher: [
+    "aes256-cbc",
+    "aes128-ctr",
+    "aes192-ctr",
+    "aes256-ctr",
+    "aes128-gcm",
+    "aes128-gcm@openssh.com",
+    "aes256-gcm",
+    "aes256-gcm@openssh.com",
+  ],
+  hostKeyAlgorithms: [
+    "ssh-rsa",
+    "ssh-ed25519",
+    "ecdsa-sha2-nistp256",
+    "ecdsa-sha2-nistp384",
+    "ecdsa-sha2-nistp521",
+  ],
+  kex: [
+    "diffie-hellman-group1-sha1",
+    "ecdh-sha2-nistp256",
+    "ecdh-sha2-nistp384",
+    "ecdh-sha2-nistp521",
+    "diffie-hellman-group-exchange-sha256",
+    "diffie-hellman-group14-sha256",
+  ],
+  serverHostKeyAlgs: [
+    "ssh-rsa",
+    "ssh-ed25519",
+    "ecdsa-sha2-nistp256",
+    "ecdsa-sha2-nistp384",
+    "ecdsa-sha2-nistp521",
+  ],
+};
+
 const executeSSHCommands = (sshDetails, res) => {
   const { host, username, password, commands } = sshDetails;
 
@@ -158,40 +193,7 @@ const executeSSHCommands = (sshDetails, res) => {
       port: 22,
       userName: username,
       password: password,
-      algorithms: {
-        cipher: [
-          "aes256-cbc",
-          "aes128-ctr",
-          "aes192-ctr",
-          "aes256-ctr",
-          "aes128-gcm",
-          "aes128-gcm@openssh.com",
-          "aes256-gcm",
-          "aes256-gcm@openssh.com",
-        ],
-        hostKeyAlgorithms: [
-          "ssh-rsa",
-          "ssh-ed25519",
-          "ecdsa-sha2-nistp256",
-          "ecdsa-sha2-nistp384",
-          "ecdsa-sha2-nistp521",
-        ],
-        kex: [
-          "diffie-hellman-group1-sha1",
-          "ecdh-sha2-nistp256",
-          "ecdh-sha2-nistp384",
-          "ecdh-sha2-nistp521",
-          "diffie-hellman-group-exchange-sha256",
-          "diffie-hellman-group14-sha256",
-        ],
-        serverHostKeyAlgs: [
-          "ssh-rsa",
-          "ssh-ed25519",
-          "ecdsa-sha2-nistp256",
-          "ecdsa-sha2-nistp384",
-          "ecdsa-sha2-nistp521",
-        ],
-      },
+      algorithms: ALGORITHMS,
     },
     commands: commands,
     readyTimeout: 50000,
@@ -241,6 +243,74 @@ endpoints.post("/executeCommands", (req, res) => {
 
   const sshDetails = { host, username, password, commands };
   executeSSHCommands(sshDetails, res);
+});
+
+const checkConnectivity = (devices, res) => {
+  const connectivityResults = {};
+  let completedSessions = 0; // Track the number of completed SSH sessions
+  let errorOccurred = false; // Flag to track if any error occurred
+
+  devices.forEach((sourceDevice) => {
+    // Initialize results array for the source device
+    connectivityResults[sourceDevice.name] = [];
+
+    // Generate ping commands to all other devices
+    const pingCommands = devices
+      .filter((targetDevice) => targetDevice.ip !== sourceDevice.ip)
+      .map((targetDevice) => `ping ${targetDevice.ip}`);
+
+    let SSHHost = {
+      server: {
+        host: sourceDevice.ip,
+        port: 22,
+        userName: sourceDevice.username,
+        password: sourceDevice.password,
+        algorithms: ALGORITHMS,
+      },
+      commands: pingCommands,
+      readyTimeout: 50000,
+      idleTimeOut: 15000,
+      connectedMessage: "connected",
+      readyMessage: "ready",
+      closedMessage: "closed",
+      onCommandComplete: function (command, response, sshObj) {
+        if (response.includes("100 percent")) {
+          const targetName = devices.find(
+            (d) => `ping ${d.ip}` === command
+          ).name;
+          connectivityResults[sourceDevice.name].push(targetName);
+        }
+      },
+      onEnd: function (sessionText, sshObj) {
+        completedSessions++;
+        if (completedSessions === devices.length && !errorOccurred) {
+          res.status(200).json(connectivityResults);
+        }
+      },
+    };
+
+    let ssh = new SSH2Shell(SSHHost);
+
+    ssh.on("error", function (err, type, close, callback) {
+      console.log("Error occurred: " + err);
+      if (!errorOccurred) {
+        errorOccurred = true; // Set error flag
+        res.status(500).json({ error: err.toString(), connectivityResults });
+      }
+    });
+
+    ssh.connect();
+  });
+};
+
+endpoints.post("/checkConnectivity", (req, res) => {
+  const { devices } = req.body;
+
+  if (!Array.isArray(devices) || devices.length === 0) {
+    return res.status(400).send("Devices as an array is required");
+  }
+
+  checkConnectivity(devices, res);
 });
 
 module.exports = endpoints;
